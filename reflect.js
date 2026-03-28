@@ -72,20 +72,21 @@ Respond with ONLY valid JSON matching this exact structure:
   "what_happened": "Brief factual summary of what occurred (2-3 sentences max)",
   "what_worked": "What strategies or actions led to progress (null if nothing worked)",
   "what_failed": "What went wrong, based ONLY on executor errors above (null if nothing failed)",
-  "strategy": "If successful: a reusable step-by-step procedure for similar tasks, using semantic descriptions not pixel coordinates. If failed: null",
-  "strategy_name": "Short name for the strategy (e.g. 'Navigate to URL in Brave'). null if no strategy",
-  "strategy_steps": ["Step 1 description", "Step 2 description"],
-  "app_context": "Which app this applies to (null if general)",
+  "strategy": "If successful: a reusable procedure description for similar tasks. If failed: null",
+  "strategy_name": "Short name for the strategy (e.g. 'Search Google for query'). null if no strategy",
+  "strategy_steps": ["focus_app Browser", "navigate_to https://google.com", "click_and_type 'Search' text={{query}}", "press_key enter", "read_page", "task_complete"],
+  "app_context": "Which app this applies to — use 'browser' for any web browser, or specific app name for non-browser apps. null if general",
   "anti_pattern": "What to avoid next time, based ONLY on actual errors listed above (null if no clear anti-pattern)",
   "preconditions": "What needs to be true before this strategy works (null if none)"
 }
 
 RULES:
-- Use SEMANTIC descriptions: "focus the address bar" not "click at (400, 50)"
-- Reference UI elements by NAME or ROLE: "the search input" not coordinates
+- strategy_steps MUST use TOOL NAMES from this list: focus_app, click_element, click_and_type, press_key, keyboard_shortcut, scroll_page, read_page, navigate_to, web_search, take_screenshot, task_complete, task_failed
+- Reference elements by NAME: click_element "Google Search" NOT click at (400, 50)
+- Use {{param}} for variable parts: navigate_to {{url}}, click_and_type "Search" text={{query}}
+- app_context MUST be "browser" for ANY web browser task (Safari, Brave, Chrome)
 - Only claim things supported by the executor feedback above
 - If you're unsure why something failed, say "unclear from executor data" not a guess
-- Keep strategy steps generic enough to work on any screen size
 - strategy_steps MUST be an array of strings, not a single string`;
 
   return {

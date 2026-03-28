@@ -244,7 +244,7 @@ function reinforceSkill(skillId) {
 
 function weakenSkill(skillId) {
   getDb().prepare(`
-    UPDATE skills SET confidence = MAX(0.0, confidence - 0.15), last_used_at = ? WHERE id = ?
+    UPDATE skills SET confidence = MAX(0.05, confidence - 0.1), last_used_at = ? WHERE id = ?
   `).run(utcNow(), skillId);
 }
 
@@ -252,6 +252,16 @@ function findSkillByName(name) {
   return getDb().prepare(
     'SELECT * FROM skills WHERE name = ? LIMIT 1'
   ).get(name) || null;
+}
+
+/** Normalize browser app names so Safari/Brave/Chrome skills are cross-searchable. */
+function normalizeBrowser(app) {
+  if (!app) return null;
+  const l = app.toLowerCase();
+  if (l.includes('safari') || l.includes('brave') || l.includes('chrome') || l.includes('chromium') || l.includes('edge')) {
+    return 'browser';
+  }
+  return app;
 }
 
 function searchSkills(query, opts = {}) {
@@ -262,7 +272,11 @@ function searchSkills(query, opts = {}) {
   const params = words.slice();
 
   let sql = `SELECT * FROM skills WHERE (${conditions.join(' OR ')})`;
-  if (opts.app) { sql += ' AND app_context = ?'; params.push(opts.app); }
+  // Cross-browser: if searching for a browser app, match ALL browser skills
+  const normalizedApp = opts.app ? normalizeBrowser(opts.app) : null;
+  if (opts.app && normalizedApp !== 'browser') {
+    sql += ' AND app_context = ?'; params.push(opts.app);
+  }
   if (opts.minConfidence) { sql += ' AND confidence >= ?'; params.push(opts.minConfidence); }
   sql += ' ORDER BY confidence DESC LIMIT ?';
   params.push(opts.limit || 10);

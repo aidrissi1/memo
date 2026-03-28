@@ -213,21 +213,24 @@ function getRecentSessions(limit) {
 // ── Helpers ──────────────────────────────────────────────
 
 function describeAction(action) {
+  const el = action._matched ? ` "${action._matched}"` : '';
   switch (action.action) {
-    case 'click':       return `Click at (${action.x}, ${action.y})`;
-    case 'right_click': return `Right-click at (${action.x}, ${action.y})`;
-    case 'move':        return `Move mouse to (${action.x}, ${action.y})`;
-    case 'type':        return `Type: "${(action.text || '').slice(0, 80)}"`;
-    case 'key':         return `Press key: ${action.key}`;
-    case 'shortcut':    return `Shortcut: ${[...(action.modifiers || []), action.key].join('+')}`;
-    case 'scroll':      return `Scroll ${action.direction || 'down'} ${action.amount || 3}`;
-    case 'focus':       return `Focus app: ${action.app}`;
-    case 'find':        return `Find UI element: "${action.name}"`;
-    case 'skill':       return `Skill: ${action.skill || 'unknown'}${action.method ? '.' + action.method : ''}`;
-    case 'recall':      return `Recall: "${action.query || ''}"`;
-    case 'done':        return `Done: ${action.reason || ''}`;
-    case 'fail':        return `Failed: ${action.reason || ''}`;
-    default:            return `Action "${action.action}": ${JSON.stringify(action).slice(0, 100)}`;
+    case 'click':       return `click_element${el}` + (el ? '' : ` at (${action.x}, ${action.y})`);
+    case 'click_type':  return `click_and_type${el} text="${(action.text || '').slice(0, 60)}"`;
+    case 'right_click': return `right_click${el}` + (el ? '' : ` at (${action.x}, ${action.y})`);
+    case 'type':        return `type "${(action.text || '').slice(0, 80)}"`;
+    case 'key':         return `press_key ${action.key}`;
+    case 'shortcut':    return `keyboard_shortcut ${[...(action.modifiers || []), action.key].join('+')}`;
+    case 'scroll':      return `scroll_page ${action.direction || 'down'}`;
+    case 'navigate':    return `navigate_to ${action.url || ''}`;
+    case 'focus':       return `focus_app ${action.app}`;
+    case 'read':        return `read_page`;
+    case 'screenshot':  return `take_screenshot`;
+    case 'web_search':  return `web_search "${action.query || ''}"`;
+    case 'recall':      return `recall_memory "${action.query || ''}"`;
+    case 'done':        return `task_complete: ${action.reason || ''}`;
+    case 'fail':        return `task_failed: ${action.reason || ''}`;
+    default:            return `${action.action}: ${JSON.stringify(action).slice(0, 100)}`;
   }
 }
 
