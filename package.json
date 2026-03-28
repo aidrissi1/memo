@@ -1,0 +1,25 @@
+{
+  "name": "memory-engine",
+  "version": "0.1.0",
+  "description": "Persistent AI memory engine — classify, flag context loss, query relevant history. Built for Piggy, works with anything.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Idrissi <ahmed@idravision.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aidrissi1/memory-engine.git"
+  },
+  "keywords": [
+    "ai",
+    "memory",
+    "context",
+    "persistence",
+    "agent",
+    "llm"
+  ],
+  "dependencies": {},
+  "type": "commonjs"
+}
